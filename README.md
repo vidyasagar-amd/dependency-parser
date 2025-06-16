@@ -76,7 +76,7 @@ python main.py optimize enhanced_dependency_mapping.json <changed_file1> [<chang
 **Arguments:**
 
 1.  `<path_to_build.ninja>`: (Required) The full path to the `build.ninja` file within your Ninja build directory.
-2.  `[--workspace-root <workspace_root>]`: (Optional, recommended) The root directory of your workspace. If omitted, defaults to `/root/workspace/composable_kernel`.
+2.  `[--workspace-root <workspace_root>]`: (Optional, recommended) The root directory of your workspace.
 3.  `[path_to_ninja_executable]`: (Optional) The path to the `ninja` executable if it's not in your system's PATH. Defaults to `ninja`.
 
 **Example:**
