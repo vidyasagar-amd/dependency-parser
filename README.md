@@ -1,18 +1,15 @@
-# Enhanced Ninja Dependency Parser
+# Dependency-based Selective Test Filtering using Static Ninja for C++ Projects
 
 ## Overview
 
-The `src/enhanced_ninja_parser.py` script is a tool designed to capture a comprehensive list of dependencies, including both source files (.cpp, .c, etc.) and header files (.h, .hpp, etc.). This detailed mapping is crucial for understanding the impact of file changes on build targets, particularly test executables.
+This tool provides advanced dependency-based selective test filtering and build optimization for large C++ monorepos using static parsing of Ninja build files. By analyzing both source and header dependencies, it enables precise identification of which tests and executables are affected by code changes, allowing for efficient CI/CD workflows and faster incremental builds.
 
-The parser is engineered to:
-- Identify all executables defined in the Ninja build. 
-- For each executable, find all its constituent object files.
-- For each object file, use `ninja -t deps` to list all its dependencies (source and header files).
-- Construct a mapping from each source/header file to all executables that depend on it.
-- Handle files that are dependencies for multiple executables.
-- Optionally filter out system headers to focus on project-specific files.
-- Perform dependency extraction in parallel for improved performance on large projects.
-- Export the final mapping to CSV and JSON formats.
+The parser:
+- Identifies all executables in the Ninja build.
+- Maps object files to their source and header dependencies using `ninja -t deps`.
+- Constructs a reverse mapping from each file to all dependent executables.
+- Handles multi-executable dependencies and supports parallel processing for scalability.
+- Exports results in CSV and JSON formats for integration with other tools.
 
 ## Features
 
@@ -32,6 +29,31 @@ The parser is engineered to:
 - **Python 3.7+**
 - **Ninja build system**: The `ninja` executable must be in the system's PATH or its path provided as an argument.
 - A **Ninja build directory** containing a `build.ninja` file and the compiled object files. The project should have been built at least once.
+
+## Using CMake with Ninja
+
+To use this tool effectively, your C++ project should be configured with CMake to generate Ninja build files and dependency information. Follow these steps:
+
+1. **Configure CMake to use Ninja and generate dependencies:**
+    ```bash
+    cmake -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Release /path/to/your/source
+    ```
+    - The `-G Ninja` flag tells CMake to generate Ninja build files.
+    - `-DCMAKE_EXPORT_COMPILE_COMMANDS=ON` is optional but useful for other tooling.
+    - Ensure your CMakeLists.txt uses `target_include_directories` and proper dependency declarations for accurate results.
+
+2. **Build your project with Ninja:**
+    ```bash
+    ninja
+    ```
+    - This step is required to generate all object files and dependency information (`.d` files) that the parser relies on.
+
+3. **Run the dependency parser tool:**
+    ```bash
+    python main.py parse /path/to/build.ninja --workspace-root /path/to/your/workspace
+    ```
+
+**Note:** Always run Ninja to ensure all dependencies are up to date before invoking the parser. If you change source files or headers, re-run Ninja first.
 
 ## Usage
 
@@ -148,4 +170,4 @@ Running the script will generate two files in the same directory as the input `b
     *   Verify that your CMake (or other meta-build system) is configured to generate dependency files for Ninja.
 -   **Slow Performance**: For very large projects, the number of `ninja -t deps` calls can be substantial. While parallelized, it can still take time. Consider if all object files truly need to be analyzed or if a subset is sufficient for your needs.
 
-This `enhanced_ninja_parser.py` provides a powerful way to gain deep insights into your Ninja project's dependency structure, enabling more intelligent build and test workflows.
+This tool provides a powerful way to gain deep insights into your Ninja project's dependency structure, enabling more intelligent build and test workflows.
