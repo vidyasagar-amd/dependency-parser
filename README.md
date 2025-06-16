@@ -1,4 +1,4 @@
-# Dependency-based Selective Test Filtering using Static Ninja for C++ Projects
+# Dependency-based Selective Test Filtering using Static Analysis of Ninja Builds for C++ Projects
 
 ## Overview
 
